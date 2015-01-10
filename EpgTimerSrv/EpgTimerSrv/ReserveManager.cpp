@@ -3382,9 +3382,22 @@ BOOL CReserveManager::CheckChgEventID(EPGDB_EVENT_INFO* info, RESERVE_DATA* data
 				samePer2 = (hitCount*100) / (hitCount+missCount);
 			}
 
-			if( samePer1 > 80 || samePer2 > 80 ){
-				//80%ˆÈã‚Ìˆê’v‚Åˆê‚Æ‚·‚é
-				chgEventID = TRUE;
+			if( ConvertI64Time(data->startTime) > ConvertI64Time(info->start_time) ){
+				if( GetNowI64Time() < ConvertI64Time(info->start_time) ){
+					if( samePer1 == 100 || samePer2 == 100 ){
+						chgEventID = TRUE;
+					}
+				}
+			}else{
+				if( GetNowI64Time() > ConvertI64Time(info->start_time) ){
+					if( samePer1 == 100 || samePer2 == 100 ){
+						chgEventID = TRUE;
+					}
+				}else{
+					if( samePer1 > 80 || samePer2 > 80 ){
+						chgEventID = TRUE;
+					}
+				}
 			}
 			/*
 			if( data->title.find(nowTitle) != string::npos){
