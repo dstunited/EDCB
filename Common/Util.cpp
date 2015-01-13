@@ -197,6 +197,7 @@ BOOL _GetDiskFreeSpaceEx(
 
 void _OutputDebugString(const TCHAR *format, ...)
 {
+#ifdef _DEBUG
 	va_list params;
 
 	va_start(params, format);
@@ -212,6 +213,7 @@ void _OutputDebugString(const TCHAR *format, ...)
 	}
 
 	va_end(params);
+#endif
 }
 
 void GetLastErrMsg(DWORD err, wstring& msg)
