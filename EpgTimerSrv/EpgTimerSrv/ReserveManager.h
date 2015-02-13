@@ -192,7 +192,7 @@ public:
 	BOOL ChkAddReserve(RESERVE_DATA* chkData, WORD* status);
 
 	//6日以内の録画結果に同じ番組名あるかチェックする
-	BOOL IsFindRecEventInfo(EPGDB_EVENT_INFO* info, WORD chkDay);
+	BOOL IsFindRecEventInfo(EPGDB_EVENT_INFO* info, const EPGDB_SEARCH_KEY_INFO* key);
 	void ChgAutoAddNoRec(EPGDB_EVENT_INFO* info);
 
 	BOOL IsRecInfoChg();

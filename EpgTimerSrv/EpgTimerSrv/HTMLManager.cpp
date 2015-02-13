@@ -547,6 +547,18 @@ void CHTMLManager::CreateSearchSetForm(EPGDB_SEARCH_KEY_INFO* setData, CParseChT
 
 	Format(buff, "確認対象期間<input type=\"text\" name=\"chkRecDay\" value=\"%d\" size=5>日前まで<BR>\r\n", setData->chkRecDay);
 	htmlText+=buff;
+
+    htmlText+="無効対象:\r\n<select name=\"chkRecNoService\">\r\n";
+    if( setData->chkRecNoService == 0 ){
+        htmlText+="<option value=\"0\" selected>同一サービスのみ無効\r\n";
+        htmlText+="<option value=\"1\">全てのサービスで無効\r\n";
+    }else{
+        htmlText+="<option value=\"0\">同一サービスのみ無効\r\n";
+        htmlText+="<option value=\"1\" selected>全てのサービスで無効\r\n";
+    }
+	htmlText+="<BR>\r\n";
+
+	htmlText+="</select>\r\n";
 	htmlText+="<BR><BR>\r\n";
 }
 
@@ -3800,6 +3812,11 @@ BOOL CHTMLManager::GetAddAutoEpgPage(EPG_AUTO_ADD_DATA* val, string param, vecto
 			Format(buff, "<input type=hidden name=\"%s\" value=\"%s\">\r\n", itr->first.c_str(), itr->second.c_str());
 			hiddenParam += buff;
 		}
+		else if( CompareNoCase(itr->first, "chkRecNoService") == 0 ){
+			searchKey.chkRecNoService = (BOOL)atoi(itr->second.c_str());
+			Format(buff, "<input type=hidden name=\"%s\" value=\"%s\">\r\n", itr->first.c_str(), itr->second.c_str());
+			hiddenParam += buff;
+		}
 		else if( CompareNoCase(itr->first, "chkDurationMin") == 0 ){
 			searchKey.chkDurationMin = (WORD)atoi(itr->second.c_str());
 			Format(buff, "<input type=hidden name=\"%s\" value=\"%s\">\r\n", itr->first.c_str(), itr->second.c_str());
@@ -4027,6 +4044,9 @@ BOOL CHTMLManager::GetAutoEpgParam(EPG_AUTO_ADD_DATA* val, HTTP_STREAM* recvPara
 		}
 		else if( CompareNoCase(itr->first, "chkRecDay") == 0 ){
 			val->searchInfo.chkRecDay = (WORD)atoi(itr->second.c_str());
+		}
+		else if( CompareNoCase(itr->first, "chkRecNoService") == 0 ){
+			val->searchInfo.chkRecNoService = (BOOL)atoi(itr->second.c_str());
 		}
 		else if( CompareNoCase(itr->first, "chkDurationMin") == 0 ){
 			val->searchInfo.chkDurationMin = (WORD)atoi(itr->second.c_str());
@@ -4402,6 +4422,11 @@ BOOL CHTMLManager::GetChgAutoEpgPage(EPG_AUTO_ADD_DATA* val, string param, vecto
 		}
 		else if( CompareNoCase(itr->first, "chkRecDay") == 0 ){
 			searchKey.chkRecDay = (WORD)atoi(itr->second.c_str());
+			Format(buff, "<input type=hidden name=\"%s\" value=\"%s\">\r\n", itr->first.c_str(), itr->second.c_str());
+			hiddenParam += buff;
+		}
+		else if( CompareNoCase(itr->first, "chkRecNoService") == 0 ){
+			searchKey.chkRecNoService = (BOOL)atoi(itr->second.c_str());
 			Format(buff, "<input type=hidden name=\"%s\" value=\"%s\">\r\n", itr->first.c_str(), itr->second.c_str());
 			hiddenParam += buff;
 		}

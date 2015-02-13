@@ -60,6 +60,7 @@ namespace EpgTimer
             dest.videoList = src.videoList.ToList();
             dest.chkRecEnd = src.chkRecEnd;
             dest.chkRecDay = src.chkRecDay;
+            dest.chkRecNoService = src.chkRecNoService;
             dest.chkDurationMin = src.chkDurationMin;
             dest.chkDurationMax = src.chkDurationMax;
         }

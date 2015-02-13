@@ -783,7 +783,7 @@ BOOL CEpgTimerSrvMain::AutoAddReserveEPG(int targetSize, EPG_AUTO_ADD_DATA* targ
 
 						addItem->recSetting = itrKey->second.recSetting;
 						if( itrKey->second.searchInfo.chkRecEnd == 1 ){
-							if( this->reserveManager.IsFindRecEventInfo(result, itrKey->second.searchInfo.chkRecDay) == TRUE ){
+							if( this->reserveManager.IsFindRecEventInfo(result, &(itrKey->second.searchInfo)) == TRUE ){
 								addItem->recSetting.recMode = RECMODE_NO;
 							}
 						}
@@ -803,7 +803,7 @@ BOOL CEpgTimerSrvMain::AutoAddReserveEPG(int targetSize, EPG_AUTO_ADD_DATA* targ
 						}
 					}
 			}else if( itrKey->second.searchInfo.chkRecEnd == 1 ){
-				if( this->reserveManager.IsFindRecEventInfo(result, itrKey->second.searchInfo.chkRecDay) == TRUE ){
+				if( this->reserveManager.IsFindRecEventInfo(result, &(itrKey->second.searchInfo)) == TRUE ){
 					this->reserveManager.ChgAutoAddNoRec(result);
 					chgRecEnd = TRUE;
 				}
