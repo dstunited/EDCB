@@ -871,6 +871,10 @@ namespace Def {
 		/// </summary>
 		property UInt16 chkRecDay;
 		/// <summary>
+		/// 録画済かのチェックの際、同一サービスのチェックを省略する
+		/// </summary>
+		property Byte chkRecNoService;
+		/// <summary>
 		/// 最低番組長
 		/// </summary>
 		property UInt16 chkDurationMin;
@@ -895,6 +899,7 @@ namespace Def {
 			freeCAFlag = 0;
 			chkRecEnd = 0;
 			chkRecDay = 6;
+			chkRecNoService = 0;
 			chkDurationMin = 0;
 			chkDurationMax = 0;
 		};

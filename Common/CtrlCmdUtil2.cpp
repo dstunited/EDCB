@@ -378,6 +378,7 @@ DWORD GetVALUESize2(WORD ver, const EPGDB_SEARCH_KEY_INFO* val )
 	}
 	size += GetVALUESize2(ver, val->chkRecEnd);
 	size += GetVALUESize2(ver, val->chkRecDay);
+	size += GetVALUESize2(ver, val->chkRecNoService);
 	size += GetVALUESize2(ver, val->chkDurationMin);
 	size += GetVALUESize2(ver, val->chkDurationMax);
 	if( ver>=3 ){
@@ -417,6 +418,7 @@ BOOL WriteVALUE2(WORD ver, const EPGDB_SEARCH_KEY_INFO* val, BYTE* buff, DWORD b
 		}
 		WRITE_VALUE2_OR_FAIL(ver, buff, buffSize, pos, size, val->chkRecEnd);
 		WRITE_VALUE2_OR_FAIL(ver, buff, buffSize, pos, size, val->chkRecDay);
+		WRITE_VALUE2_OR_FAIL(ver, buff, buffSize, pos, size, val->chkRecNoService);
 		WRITE_VALUE2_OR_FAIL(ver, buff, buffSize, pos, size, val->chkDurationMin);
 		WRITE_VALUE2_OR_FAIL(ver, buff, buffSize, pos, size, val->chkDurationMax);
 		if( ver>=3 ){
@@ -464,6 +466,7 @@ BOOL ReadVALUE2(WORD ver, EPGDB_SEARCH_KEY_INFO* val, const BYTE* buff, DWORD bu
 		}
 		READ_VALUE2_OR_FAIL(ver, buff, buffSize, pos, size, &val->chkRecEnd);
 		READ_VALUE2_OR_FAIL(ver, buff, buffSize, pos, size, &val->chkRecDay);
+		READ_VALUE2_OR_FAIL(ver, buff, buffSize, pos, size, &val->chkRecNoService);
 		READ_VALUE2_OR_FAIL(ver, buff, buffSize, pos, size, &val->chkDurationMin);
 		READ_VALUE2_OR_FAIL(ver, buff, buffSize, pos, size, &val->chkDurationMax);
 

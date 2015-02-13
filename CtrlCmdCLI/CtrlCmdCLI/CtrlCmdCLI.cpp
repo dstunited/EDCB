@@ -792,6 +792,7 @@ void CtrlCmdUtil::CopyData(Def::EpgSearchKeyInfo^ src, EPGDB_SEARCH_KEY_INFO* de
 	dest->freeCAFlag = src->freeCAFlag;
 	dest->chkRecEnd = src->chkRecEnd;
 	dest->chkRecDay = src->chkRecDay;
+	dest->chkRecNoService = src->chkRecNoService;
 	dest->chkDurationMin = src->chkDurationMin;
 	dest->chkDurationMax = src->chkDurationMax;
 }
@@ -833,6 +834,7 @@ void CtrlCmdUtil::CopyData(EPGDB_SEARCH_KEY_INFO* src, Def::EpgSearchKeyInfo^% d
 	dest->freeCAFlag = src->freeCAFlag;
 	dest->chkRecEnd = src->chkRecEnd;
 	dest->chkRecDay = src->chkRecDay;
+	dest->chkRecNoService = src->chkRecNoService;
 	dest->chkDurationMin = src->chkDurationMin;
 	dest->chkDurationMax = src->chkDurationMax;
 }

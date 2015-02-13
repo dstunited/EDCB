@@ -959,7 +959,7 @@ bool CEpgTimerSrvMain::AutoAddReserveEPG(const EPG_AUTO_ADD_DATA& data)
 					item.serviceID = info.service_id;
 					item.eventID = info.event_id;
 					item.recSetting = data.recSetting;
-					if( data.searchInfo.chkRecEnd != 0 && this->reserveManager.IsFindRecEventInfo(info, data.searchInfo.chkRecDay) ){
+					if( data.searchInfo.chkRecEnd != 0 && this->reserveManager.IsFindRecEventInfo(info, data.searchInfo) ){
 						item.recSetting.recMode = RECMODE_NO;
 					}
 					item.comment = L"EPGŽ©“®—\–ñ";
@@ -969,7 +969,7 @@ bool CEpgTimerSrvMain::AutoAddReserveEPG(const EPG_AUTO_ADD_DATA& data)
 						Replace(item.comment, L"\n", L"");
 					}
 				}
-			}else if( data.searchInfo.chkRecEnd != 0 && this->reserveManager.IsFindRecEventInfo(info, data.searchInfo.chkRecDay) ){
+			}else if( data.searchInfo.chkRecEnd != 0 && this->reserveManager.IsFindRecEventInfo(info, data.searchInfo) ){
 				//˜^‰æÏ‚Ý‚È‚Ì‚Å–³Œø‚Å‚È‚¢—\–ñ‚Í–³Œø‚É‚·‚é
 				if( this->reserveManager.ChgAutoAddNoRec(info.original_network_id, info.transport_stream_id, info.service_id, info.event_id) ){
 					modified = true;
