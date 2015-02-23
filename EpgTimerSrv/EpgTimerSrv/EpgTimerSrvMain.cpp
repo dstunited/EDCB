@@ -225,6 +225,11 @@ void CEpgTimerSrvMain::StartMain(
 			}
 		}
 		//予約終了後の動作チェック
+		if( this->reserveManager.IsChkAutoAddReserveEPG() == TRUE ){
+			//IsEnableSuspend()==TRUE の場合はAutoAddReserveEPG()が2回実施されるがやむを得ない
+			AutoAddReserveEPG();
+			this->reserveManager.IsChkAutoAddReserveEPG_PostWork();
+		}
 		if( this->reserveManager.IsEnableSuspend(&suspendMode, &rebootFlag ) == TRUE ){
 			OutputDebugString(L"★IsEnableSuspend");
 			SetEvent(this->reloadEpgChkEvent);

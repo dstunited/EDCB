@@ -89,6 +89,10 @@ CReserveManager::CReserveManager(void)
 
 	this->chgRecInfo = FALSE;
 
+	this->chkRecEndAutoAddReserveEPG = FALSE;
+	this->chkRecEnd_delay_suspendMode = 0xFF;
+	this->chkRecEnd_delay_rebootFlag = 0xFF;
+
 	ReloadSetting();
 }
 
@@ -2665,12 +2669,13 @@ void CReserveManager::CheckEndReserve()
 		this->recInfoText.SaveText();
 		this->recInfo2Text.SaveText();
 		this->chgRecInfo = TRUE;
+		this->chkRecEndAutoAddReserveEPG = TRUE;
 
 		_SendNotifyUpdate(NOTIFY_UPDATE_RESERVE_INFO);
 		_SendNotifyUpdate(NOTIFY_UPDATE_REC_INFO);
 	}
 	if( suspendMode != 0xFF && rebootFlag != 0xFF ){
-		EnableSuspendWork(suspendMode, rebootFlag, 0);
+		EnableSuspendWorkDelaySet(suspendMode, rebootFlag);
 	}
 }
 
@@ -2817,6 +2822,9 @@ void CReserveManager::CheckBatWork()
 		}
 	}else{
 		if( this->batManager.IsWorking() == FALSE ){
+			//EPG自動予約の録画後確認待ちの時は、サスペンド処理の判定を待つ。
+			if( this->chkRecEndAutoAddReserveEPG == TRUE) return;
+
 			BYTE suspendMode = 0;
 			BYTE rebootFlag = 0;
 			if( this->batManager.GetLastWorkSuspend(&suspendMode, &rebootFlag) == TRUE ){
@@ -5026,6 +5034,42 @@ BOOL CReserveManager::IsRecInfoChg()
 
 	UnLock();
 	return ret;
+}
+
+BOOL CReserveManager::IsChkAutoAddReserveEPG()
+{
+	if( Lock(L"IsChkAutoAddReserveEPG") == FALSE ) return FALSE;
+	BOOL ret = TRUE;
+
+	ret = this->chkRecEndAutoAddReserveEPG;
+
+	//バッチ後のEnableSuspendWork()はこの関数の実行を待つので、
+	//CEpgTimerSrvMain::AutoAddReserveEPGは必ず先に実行される。
+	this->chkRecEndAutoAddReserveEPG = FALSE;
+
+	UnLock();
+	return ret;
+}
+
+void CReserveManager::IsChkAutoAddReserveEPG_PostWork()
+{
+	if( Lock(L"IsChkAutoAddReserveEPG_PostWork") == FALSE ) return;
+
+	if( this->chkRecEnd_delay_suspendMode != 0xFF && this->chkRecEnd_delay_rebootFlag != 0xFF ){
+		EnableSuspendWork(this->chkRecEnd_delay_suspendMode,this->chkRecEnd_delay_rebootFlag,0);
+	}
+		
+	this->chkRecEnd_delay_suspendMode = 0xFF;
+	this->chkRecEnd_delay_rebootFlag = 0xFF;
+
+	UnLock();
+	return;
+}
+
+void CReserveManager::EnableSuspendWorkDelaySet(BYTE suspendMode, BYTE rebootFlag)
+{
+	this->chkRecEnd_delay_suspendMode = suspendMode;
+	this->chkRecEnd_delay_rebootFlag = rebootFlag;
 }
 
 void CReserveManager::CreateDiskFreeSpace(

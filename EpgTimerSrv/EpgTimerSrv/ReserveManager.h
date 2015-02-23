@@ -196,6 +196,9 @@ public:
 	void ChgAutoAddNoRec(EPGDB_EVENT_INFO* info);
 
 	BOOL IsRecInfoChg();
+
+	BOOL IsChkAutoAddReserveEPG();
+	void IsChkAutoAddReserveEPG_PostWork();
 protected:
 	HANDLE lockEvent;
 
@@ -331,6 +334,10 @@ protected:
 	wstring recNamePlugInFilePath;
 
 	BOOL chgRecInfo;
+
+	BOOL chkRecEndAutoAddReserveEPG;
+	BYTE chkRecEnd_delay_suspendMode;
+	BYTE chkRecEnd_delay_rebootFlag;
 protected:
 	//PublicAPIîrëºêßå‰óp
 	BOOL Lock(LPCWSTR log = NULL, DWORD timeOut = 60*1000);
@@ -384,6 +391,7 @@ protected:
 	BOOL _IsSuspendOK(BOOL rebootFlag);
 	BOOL IsFindNoSuspendExe();
 	BOOL IsFindShareTSFile();
+	void EnableSuspendWorkDelaySet(BYTE suspendMode, BYTE rebootFlag);
 
 	BOOL GetNextEpgcapTime(LONGLONG* capTime, LONGLONG chkMargineMin, int* basicOnlyFlags = NULL);
 
