@@ -3932,7 +3932,7 @@ BOOL CReserveManager::_IsSuspendOK(BOOL rebootFlag)
 
 	LONGLONG epgcapTime = 0;
 	if( GetNextEpgcapTime(&epgcapTime, 0) == TRUE ){
-		if( epgcapTime < chkWakeTime ){
+		if( epgcapTime <= chkWakeTime || epgcapTime <= chkNoStandbyTime){
 			//EPGŽæ“¾
 			OutputDebugString(L"_IsSuspendOK EpgCapTime");
 			return FALSE;
