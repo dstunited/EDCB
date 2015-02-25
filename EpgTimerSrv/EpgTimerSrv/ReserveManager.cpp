@@ -3910,12 +3910,7 @@ BOOL CReserveManager::_IsSuspendOK(BOOL rebootFlag)
 				LONGLONG startTime;
 				LONGLONG endTime;
 				CalcEntireReserveTime(&startTime, &endTime, data);
-				//’Z‚¢—\–ñ‚Ìƒ`ƒFƒbƒN˜R‚ê‚ð–h‚®
-				if( endTime < startTime + wakeMargin*60*I64_1SEC ){
-					endTime = startTime + wakeMargin*60*I64_1SEC;
-				}
-
-				if( startTime <= chkWakeTime && chkWakeTime < endTime ){
+				if( startTime <= chkWakeTime ){
 					OutputDebugString(L"_IsSuspendOK chkWakeTime");
 					//ŽŸ‚Ì—\–ñŽžŠÔ‚É‚©‚Ô‚é
 					return FALSE;
