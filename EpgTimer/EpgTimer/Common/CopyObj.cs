@@ -60,6 +60,8 @@ namespace EpgTimer
             dest.videoList = src.videoList.ToList();
             dest.chkRecEnd = src.chkRecEnd;
             dest.chkRecDay = src.chkRecDay;
+            dest.chkDurationMin = src.chkDurationMin;
+            dest.chkDurationMax = src.chkDurationMax;
         }
 
         public static List<EpgContentData> Clone(this List<EpgContentData> src) { return src.Clone<EpgContentData>(); }

@@ -870,6 +870,14 @@ namespace Def {
 		/// 録画済かのチェック対象期間
 		/// </summary>
 		property UInt16 chkRecDay;
+		/// <summary>
+		/// 最低番組長
+		/// </summary>
+		property UInt16 chkDurationMin;
+		/// <summary>
+		/// 最大番組長
+		/// </summary>
+		property UInt16 chkDurationMax;
 	public:
 		EpgSearchKeyInfo(void){
 			andKey = gcnew String("");
@@ -887,6 +895,8 @@ namespace Def {
 			freeCAFlag = 0;
 			chkRecEnd = 0;
 			chkRecDay = 6;
+			chkDurationMin = 0;
+			chkDurationMax = 0;
 		};
 	};
 

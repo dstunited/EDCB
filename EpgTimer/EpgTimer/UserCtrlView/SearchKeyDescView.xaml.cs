@@ -206,6 +206,9 @@ namespace EpgTimer
                     key.chkRecEnd = 0;
                 }
                 key.chkRecDay = Convert.ToUInt16(textBox_chkRecDay.Text.ToString());
+
+                key.chkDurationMin = Convert.ToUInt16(textBox_chkDurationMin.Text.ToString());
+                key.chkDurationMax = Convert.ToUInt16(textBox_chkDurationMax.Text.ToString());
             }
             catch (Exception ex)
             {
@@ -338,6 +341,9 @@ namespace EpgTimer
                     checkBox_chkRecEnd.IsChecked = false;
                 }
                 textBox_chkRecDay.Text = defKey.chkRecDay.ToString();
+
+                textBox_chkDurationMin.Text = defKey.chkDurationMin.ToString();
+                textBox_chkDurationMax.Text = defKey.chkDurationMax.ToString();   
             }
             catch (Exception ex)
             {

@@ -530,6 +530,14 @@ void CHTMLManager::CreateSearchSetForm(EPGDB_SEARCH_KEY_INFO* setData, CParseChT
 	htmlText+="</select>\r\n";
 	htmlText+="<BR><BR>\r\n";
 
+	Format(buff, "ç≈í·î‘ëgí∑<input type=\"text\" name=\"chkDurationMin\" value=\"%d\" size=5>ï™à»è„\r\n", setData->chkDurationMin);
+	htmlText+=buff;
+
+	htmlText+="<BR>\r\n";
+	Format(buff, "ç≈ëÂî‘ëgí∑<input type=\"text\" name=\"chkDurationMax\" value=\"%d\" size=5>ï™à»â∫\r\n", setData->chkDurationMax);
+	htmlText+=buff;
+
+	htmlText+="<BR><BR>\r\n";
 	if( setData->chkRecEnd == 0 ){
 		htmlText+="<input type=checkbox name=\"chkRecEnd\" value=\"1\">ìØàÍî‘ëgñºÇÃò^âÊåãâ Ç™Ç†ÇÍÇŒñ≥å¯Ç≈ìoò^Ç∑ÇÈ\r\n";
 	}else{
@@ -3792,6 +3800,16 @@ BOOL CHTMLManager::GetAddAutoEpgPage(EPG_AUTO_ADD_DATA* val, string param, vecto
 			Format(buff, "<input type=hidden name=\"%s\" value=\"%s\">\r\n", itr->first.c_str(), itr->second.c_str());
 			hiddenParam += buff;
 		}
+		else if( CompareNoCase(itr->first, "chkDurationMin") == 0 ){
+			searchKey.chkDurationMin = (WORD)atoi(itr->second.c_str());
+			Format(buff, "<input type=hidden name=\"%s\" value=\"%s\">\r\n", itr->first.c_str(), itr->second.c_str());
+			hiddenParam += buff;
+		}
+		else if( CompareNoCase(itr->first, "chkDurationMax") == 0 ){
+			searchKey.chkDurationMax = (WORD)atoi(itr->second.c_str());
+			Format(buff, "<input type=hidden name=\"%s\" value=\"%s\">\r\n", itr->first.c_str(), itr->second.c_str());
+			hiddenParam += buff;
+		}
 	}
 	CreateSearchSetForm(&searchKey, &chSet5, paramText);
 
@@ -4009,6 +4027,12 @@ BOOL CHTMLManager::GetAutoEpgParam(EPG_AUTO_ADD_DATA* val, HTTP_STREAM* recvPara
 		}
 		else if( CompareNoCase(itr->first, "chkRecDay") == 0 ){
 			val->searchInfo.chkRecDay = (WORD)atoi(itr->second.c_str());
+		}
+		else if( CompareNoCase(itr->first, "chkDurationMin") == 0 ){
+			val->searchInfo.chkDurationMin = (WORD)atoi(itr->second.c_str());
+		}
+		else if( CompareNoCase(itr->first, "chkDurationMax") == 0 ){
+			val->searchInfo.chkDurationMax = (WORD)atoi(itr->second.c_str());
 		}
 	}
 
@@ -4378,6 +4402,16 @@ BOOL CHTMLManager::GetChgAutoEpgPage(EPG_AUTO_ADD_DATA* val, string param, vecto
 		}
 		else if( CompareNoCase(itr->first, "chkRecDay") == 0 ){
 			searchKey.chkRecDay = (WORD)atoi(itr->second.c_str());
+			Format(buff, "<input type=hidden name=\"%s\" value=\"%s\">\r\n", itr->first.c_str(), itr->second.c_str());
+			hiddenParam += buff;
+		}
+		else if( CompareNoCase(itr->first, "chkDurationMin") == 0 ){
+			searchKey.chkDurationMin = (WORD)atoi(itr->second.c_str());
+			Format(buff, "<input type=hidden name=\"%s\" value=\"%s\">\r\n", itr->first.c_str(), itr->second.c_str());
+			hiddenParam += buff;
+		}
+		else if( CompareNoCase(itr->first, "chkDurationMax") == 0 ){
+			searchKey.chkDurationMax = (WORD)atoi(itr->second.c_str());
 			Format(buff, "<input type=hidden name=\"%s\" value=\"%s\">\r\n", itr->first.c_str(), itr->second.c_str());
 			hiddenParam += buff;
 		}
