@@ -1455,6 +1455,52 @@ UInt32 CtrlCmdUtil::SendSearchPg(
 }
 
 /// <summary>
+/// 指定イベントの番組情報を取得する(キーごと)
+/// </summary>
+/// <param name="key">[IN]検索キー（複数指定時はまとめて検索結果が返る）</param>
+/// <param name="val">[OUT]番組情報一覧（キーごとの全ての検索結果が返る）</param>
+UInt32 CtrlCmdUtil::SendSearchPgByKey(
+	List<Def::EpgSearchKeyInfo^>^ key,
+	List<List<Def::EpgEventInfo^>^>^% val
+	)
+{
+	vector<EPGDB_SEARCH_KEY_INFO> keyList;
+	vector<EPGDB_EVENT_INFO*> list;
+
+	for( int i=0; i<key->Count; i++ ){
+		EPGDB_SEARCH_KEY_INFO item;
+		CopyData(key[i], &item);
+		keyList.push_back(item);
+	}
+
+	//送られてくるデータはダミー区切りのリストなので、ここで分解する。
+
+	DWORD ret = this->sendCmd->SendSearchPgByKey2(&keyList, &list);
+	if( ret == CMD_SUCCESS ){
+        List<Def::EpgEventInfo^>^ itemlist = gcnew List<Def::EpgEventInfo^>();
+
+		for( size_t i=0; i<list.size(); i++ ){
+			Def::EpgEventInfo^ item = gcnew Def::EpgEventInfo();
+
+			if (list[i]->original_network_id == 0 && list[i]->transport_stream_id == 0 &&
+                list[i]->service_id == 0 && list[i]->event_id == 0 && list[i]->shortInfo == NULL)
+			{
+	            val->Add(itemlist);
+				itemlist = gcnew List<Def::EpgEventInfo^>();
+			}else
+			{
+				CopyData(list[i], item);
+                itemlist->Add(item);
+			}
+
+			SAFE_DELETE(list[i]);
+		}
+	}
+
+	return ret;
+}
+
+/// <summary>
 /// スタンバイ、休止、シャットダウンを行っていいかの確認
 /// </summary>
 UInt32 CtrlCmdUtil::SendChkSuspend(

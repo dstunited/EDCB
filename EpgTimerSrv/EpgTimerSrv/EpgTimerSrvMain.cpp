@@ -1062,6 +1062,11 @@ static void SearchPg2Callback(vector<CEpgDBManager::SEARCH_RESULT_EVENT>* pval, 
 	}
 }
 
+static void SearchPgByKey2Callback(vector<CEpgDBManager::SEARCH_RESULT_EVENT>* pval, void* param)
+{
+	SearchPg2Callback(pval, param);
+}
+
 static void EnumPgInfoCallback(vector<EPGDB_EVENT_INFO*>* pval, void* param)
 {
 	CMD_STREAM *resParam = (CMD_STREAM*)param;
@@ -1748,6 +1753,27 @@ int CALLBACK CEpgTimerSrvMain::CtrlCmdCallback(void* param, CMD_STREAM* cmdParam
 						vector<EPGDB_SEARCH_KEY_INFO> key;
 						if( ReadVALUE2(ver, &key, cmdParam->data+readSize, cmdParam->dataSize-readSize, NULL ) == TRUE ){
 							sys->epgDB.SearchEpg(&key, SearchPg2Callback, resParam);
+						}
+					}
+
+				}
+			}
+		}
+		break;
+	case CMD2_EPG_SRV_SEARCH_PG_BYKEY2:
+		{
+			OutputDebugString(L"CMD2_EPG_SRV_SEARCH_PG_BYKEY2");
+			{
+				WORD ver = (WORD)CMD_VER;
+				DWORD readSize = 0;
+				if( ReadVALUE2(ver, &ver, cmdParam->data, cmdParam->dataSize, &readSize) == TRUE ){
+
+					if( sys->epgDB.IsInitialLoadingDataDone() == FALSE ){
+						resParam->param = CMD_ERR_BUSY;
+					}else{
+						vector<EPGDB_SEARCH_KEY_INFO> key;
+						if( ReadVALUE2(ver, &key, cmdParam->data+readSize, cmdParam->dataSize-readSize, NULL ) == TRUE ){
+							sys->epgDB.SearchEpgByKey(&key, SearchPgByKey2Callback, resParam);
 						}
 					}
 
