@@ -1516,6 +1516,7 @@ namespace EpgTimer
                             CommonManager.Instance.DB.ReloadReserveInfo();
                         }
                         reserveView.UpdateReserveData();
+                        autoAddView.UpdateAutoAddInfo();
                         epgView.UpdateReserveData();
                         tunerReserveView.UpdateReserveData();
                     }
