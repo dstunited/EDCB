@@ -108,6 +108,7 @@
     <Compile Include="Setting\ColorSetWindow.xaml.cs">
       <DependentUpon>ColorSetWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\CopyObj.cs" />
     <Compile Include="Common\CmdStreamUtil.cs" />
     <Compile Include="Common\EAAFileClass.cs" />
     <Compile Include="Common\IEPGFileClass.cs" />
