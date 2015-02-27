@@ -1448,7 +1448,7 @@ UInt32 CtrlCmdUtil::SendSearchPg(
 		keyList.push_back(item);
 	}
 
-	DWORD ret = this->sendCmd->SendSearchPg(&keyList, &list);
+	DWORD ret = this->sendCmd->SendSearchPg2(&keyList, &list);
 	if( ret == CMD_SUCCESS ){
 		for( size_t i=0; i<list.size(); i++ ){
 			Def::EpgEventInfo^ item = gcnew Def::EpgEventInfo();

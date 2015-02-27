@@ -244,7 +244,7 @@ BOOL ReadVALUE2(WORD ver, RESERVE_DATA* val, const BYTE* buff, DWORD buffSize, D
 		READ_VALUE2_OR_FAIL(ver, buff, buffSize, pos, size, &val->recFileNameList);
 		READ_VALUE2_OR_FAIL(ver, buff, buffSize, pos, size, &val->param1);
 
-		if( ver>=2 ){
+		if( ver>=5 ){
 			goto CMD_END;
 		}
 	}
