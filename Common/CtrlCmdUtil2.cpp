@@ -247,7 +247,7 @@ BOOL ReadVALUE2(WORD ver, RESERVE_DATA* val, const BYTE* buff, DWORD buffSize, D
 		DWORD dwPadding;
 		READ_VALUE2_OR_FAIL(ver, buff, buffSize, pos, size, &dwPadding);
 
-		if( ver>=2 ){
+		if( ver>=5 ){
 			goto CMD_END;
 		}
 	}
