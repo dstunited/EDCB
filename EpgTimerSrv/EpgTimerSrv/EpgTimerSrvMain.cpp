@@ -901,6 +901,7 @@ BOOL CEpgTimerSrvMain::AutoAddReserveProgram()
 						item.serviceID = itr->second.serviceID;
 						item.eventID = 0xFFFF;
 						item.recSetting = itr->second.recSetting;
+						item.comment = L"ƒvƒƒOƒ‰ƒ€©“®—\–ñ";
 
 						setList.push_back(item);
 					}
