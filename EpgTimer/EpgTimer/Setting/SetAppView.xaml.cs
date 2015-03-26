@@ -876,9 +876,6 @@ namespace EpgTimer.Setting
             Settings.Instance.SearchKeyFreeCA = defSearchKey.freeCAFlag;
             Settings.Instance.SearchKeyChkRecEnd = defSearchKey.chkRecEnd;
             Settings.Instance.SearchKeyChkRecDay = defSearchKey.chkRecDay;
-            Settings.Instance.SearchKeyChkRecNoService = defSearchKey.chkRecNoService;
-            Settings.Instance.SearchKeyChkDurationMin = defSearchKey.chkDurationMin;
-            Settings.Instance.SearchKeyChkDurationMax = defSearchKey.chkDurationMax;
 
             Settings.Instance.ViewButtonShowAsTab = checkBox_showAsTab.IsChecked == true;
             Settings.Instance.ViewButtonList.Clear();

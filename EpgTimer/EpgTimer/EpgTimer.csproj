@@ -96,7 +96,6 @@
     <Compile Include="BlackoutWindow.xaml.cs">
       <DependentUpon>BlackoutWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DefineClass\EpgAutoAddDataAppend.cs" />
     <Compile Include="Common\GridViewSorter.cs" />
     <Compile Include="ConnectWindow.xaml.cs">
       <DependentUpon>ConnectWindow.xaml</DependentUpon>
@@ -109,7 +108,6 @@
     <Compile Include="Setting\ColorSetWindow.xaml.cs">
       <DependentUpon>ColorSetWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common\CopyObj.cs" />
     <Compile Include="Common\CmdStreamUtil.cs" />
     <Compile Include="Common\EAAFileClass.cs" />
     <Compile Include="Common\IEPGFileClass.cs" />
