@@ -89,6 +89,10 @@ CReserveManager::CReserveManager(void)
 
 	this->chgRecInfo = FALSE;
 
+	this->chkRecEndAutoAddReserveEPG = FALSE;
+	this->chkRecEnd_delay_suspendMode = 0xFF;
+	this->chkRecEnd_delay_rebootFlag = 0xFF;
+
 	ReloadSetting();
 }
 
@@ -2665,12 +2669,13 @@ void CReserveManager::CheckEndReserve()
 		this->recInfoText.SaveText();
 		this->recInfo2Text.SaveText();
 		this->chgRecInfo = TRUE;
+		this->chkRecEndAutoAddReserveEPG = TRUE;
 
 		_SendNotifyUpdate(NOTIFY_UPDATE_RESERVE_INFO);
 		_SendNotifyUpdate(NOTIFY_UPDATE_REC_INFO);
 	}
 	if( suspendMode != 0xFF && rebootFlag != 0xFF ){
-		EnableSuspendWork(suspendMode, rebootFlag, 0);
+		EnableSuspendWorkDelaySet(suspendMode, rebootFlag);
 	}
 }
 
@@ -2817,6 +2822,9 @@ void CReserveManager::CheckBatWork()
 		}
 	}else{
 		if( this->batManager.IsWorking() == FALSE ){
+			//EPG自動予約の録画後確認待ちの時は、サスペンド処理の判定を待つ。
+			if( this->chkRecEndAutoAddReserveEPG == TRUE) return;
+
 			BYTE suspendMode = 0;
 			BYTE rebootFlag = 0;
 			if( this->batManager.GetLastWorkSuspend(&suspendMode, &rebootFlag) == TRUE ){
@@ -3382,9 +3390,22 @@ BOOL CReserveManager::CheckChgEventID(EPGDB_EVENT_INFO* info, RESERVE_DATA* data
 				samePer2 = (hitCount*100) / (hitCount+missCount);
 			}
 
-			if( samePer1 > 80 || samePer2 > 80 ){
-				//80%以上の一致で一緒とする
-				chgEventID = TRUE;
+			if( ConvertI64Time(data->startTime) > ConvertI64Time(info->start_time) ){
+				if( GetNowI64Time() < ConvertI64Time(info->start_time) ){
+					if( samePer1 == 100 || samePer2 == 100 ){
+						chgEventID = TRUE;
+					}
+				}
+			}else{
+				if( GetNowI64Time() > ConvertI64Time(info->start_time) ){
+					if( samePer1 == 100 || samePer2 == 100 ){
+						chgEventID = TRUE;
+					}
+				}else{
+					if( samePer1 > 80 || samePer2 > 80 ){
+						chgEventID = TRUE;
+					}
+				}
 			}
 			/*
 			if( data->title.find(nowTitle) != string::npos){
@@ -3889,12 +3910,7 @@ BOOL CReserveManager::_IsSuspendOK(BOOL rebootFlag)
 				LONGLONG startTime;
 				LONGLONG endTime;
 				CalcEntireReserveTime(&startTime, &endTime, data);
-				//短い予約のチェック漏れを防ぐ
-				if( endTime < startTime + wakeMargin*60*I64_1SEC ){
-					endTime = startTime + wakeMargin*60*I64_1SEC;
-				}
-
-				if( startTime <= chkWakeTime && chkWakeTime < endTime ){
+				if( startTime <= chkWakeTime ){
 					OutputDebugString(L"_IsSuspendOK chkWakeTime");
 					//次の予約時間にかぶる
 					return FALSE;
@@ -3911,7 +3927,7 @@ BOOL CReserveManager::_IsSuspendOK(BOOL rebootFlag)
 
 	LONGLONG epgcapTime = 0;
 	if( GetNextEpgcapTime(&epgcapTime, 0) == TRUE ){
-		if( epgcapTime < chkWakeTime ){
+		if( epgcapTime <= chkWakeTime || epgcapTime <= chkNoStandbyTime){
 			//EPG取得
 			OutputDebugString(L"_IsSuspendOK EpgCapTime");
 			return FALSE;
@@ -4934,7 +4950,7 @@ void CReserveManager::GetSrvCoopEpgList(vector<wstring>* fileList)
 	}
 }
 
-BOOL CReserveManager::IsFindRecEventInfo(EPGDB_EVENT_INFO* info, WORD chkDay)
+BOOL CReserveManager::IsFindRecEventInfo(EPGDB_EVENT_INFO* info, const EPGDB_SEARCH_KEY_INFO* key)
 {
 	if( Lock(L"IsFindRecEventInfo") == FALSE ) return FALSE;
 	BOOL ret = FALSE;
@@ -4954,10 +4970,10 @@ BOOL CReserveManager::IsFindRecEventInfo(EPGDB_EVENT_INFO* info, WORD chkDay)
 			if( infoEventName.empty() == false && info->StartTimeFlag != 0 ){
 				map<DWORD, PARSE_REC_INFO2_ITEM>::const_iterator itr;
 				for( itr = this->recInfo2Text.GetMap().begin(); itr != this->recInfo2Text.GetMap().end(); itr++ ){
-					if( itr->second.originalNetworkID == info->original_network_id &&
+					if( ( key->chkRecNoService == 1 || itr->second.originalNetworkID == info->original_network_id &&
 					    itr->second.transportStreamID == info->transport_stream_id &&
-					    itr->second.serviceID == info->service_id &&
-					    ConvertI64Time(itr->second.startTime) + chkDay*24*60*60*I64_1SEC > ConvertI64Time(info->start_time) ){
+					    itr->second.serviceID == info->service_id ) &&
+					    ConvertI64Time(itr->second.startTime) + key->chkRecDay*24*60*60*I64_1SEC > ConvertI64Time(info->start_time) ){
 						wstring eventName = itr->second.eventName;
 						if( this->recInfo2RegExp.empty() == false ){
 							_bstr_t rpl = regExp->Replace(_bstr_t(eventName.c_str()), _bstr_t());
@@ -5013,6 +5029,42 @@ BOOL CReserveManager::IsRecInfoChg()
 
 	UnLock();
 	return ret;
+}
+
+BOOL CReserveManager::IsChkAutoAddReserveEPG()
+{
+	if( Lock(L"IsChkAutoAddReserveEPG") == FALSE ) return FALSE;
+	BOOL ret = TRUE;
+
+	ret = this->chkRecEndAutoAddReserveEPG;
+
+	//バッチ後のEnableSuspendWork()はこの関数の実行を待つので、
+	//CEpgTimerSrvMain::AutoAddReserveEPGは必ず先に実行される。
+	this->chkRecEndAutoAddReserveEPG = FALSE;
+
+	UnLock();
+	return ret;
+}
+
+void CReserveManager::IsChkAutoAddReserveEPG_PostWork()
+{
+	if( Lock(L"IsChkAutoAddReserveEPG_PostWork") == FALSE ) return;
+
+	if( this->chkRecEnd_delay_suspendMode != 0xFF && this->chkRecEnd_delay_rebootFlag != 0xFF ){
+		EnableSuspendWork(this->chkRecEnd_delay_suspendMode,this->chkRecEnd_delay_rebootFlag,0);
+	}
+		
+	this->chkRecEnd_delay_suspendMode = 0xFF;
+	this->chkRecEnd_delay_rebootFlag = 0xFF;
+
+	UnLock();
+	return;
+}
+
+void CReserveManager::EnableSuspendWorkDelaySet(BYTE suspendMode, BYTE rebootFlag)
+{
+	this->chkRecEnd_delay_suspendMode = suspendMode;
+	this->chkRecEnd_delay_rebootFlag = rebootFlag;
 }
 
 void CReserveManager::CreateDiskFreeSpace(

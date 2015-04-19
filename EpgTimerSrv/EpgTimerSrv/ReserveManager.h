@@ -192,10 +192,13 @@ public:
 	BOOL ChkAddReserve(RESERVE_DATA* chkData, WORD* status);
 
 	//6日以内の録画結果に同じ番組名あるかチェックする
-	BOOL IsFindRecEventInfo(EPGDB_EVENT_INFO* info, WORD chkDay);
+	BOOL IsFindRecEventInfo(EPGDB_EVENT_INFO* info, const EPGDB_SEARCH_KEY_INFO* key);
 	void ChgAutoAddNoRec(EPGDB_EVENT_INFO* info);
 
 	BOOL IsRecInfoChg();
+
+	BOOL IsChkAutoAddReserveEPG();
+	void IsChkAutoAddReserveEPG_PostWork();
 protected:
 	HANDLE lockEvent;
 
@@ -331,6 +334,10 @@ protected:
 	wstring recNamePlugInFilePath;
 
 	BOOL chgRecInfo;
+
+	BOOL chkRecEndAutoAddReserveEPG;
+	BYTE chkRecEnd_delay_suspendMode;
+	BYTE chkRecEnd_delay_rebootFlag;
 protected:
 	//PublicAPI排他制御用
 	BOOL Lock(LPCWSTR log = NULL, DWORD timeOut = 60*1000);
@@ -384,6 +391,7 @@ protected:
 	BOOL _IsSuspendOK(BOOL rebootFlag);
 	BOOL IsFindNoSuspendExe();
 	BOOL IsFindShareTSFile();
+	void EnableSuspendWorkDelaySet(BYTE suspendMode, BYTE rebootFlag);
 
 	BOOL GetNextEpgcapTime(LONGLONG* capTime, LONGLONG chkMargineMin, int* basicOnlyFlags = NULL);
 

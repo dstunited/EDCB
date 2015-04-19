@@ -118,6 +118,14 @@ inline DWORD GetVALUESize2(WORD ver, const vector<EPGDB_CONTENT_DATA>* val ){ CC
 inline BOOL WriteVALUE2(WORD ver, const vector<EPGDB_CONTENT_DATA>* val, BYTE* buff, DWORD buffSize, DWORD* writeSize ){ CCUTIL2_INHERIT_WRITE_; }
 inline BOOL ReadVALUE2(WORD ver, vector<EPGDB_CONTENT_DATA>* val, const BYTE* buff, DWORD buffSize, DWORD* readSize ){ CCUTIL2_INHERIT_READ_; }
 
+inline DWORD GetVALUESize2(WORD ver, const EPGDB_EVENT_INFO* val ){ CCUTIL2_INHERIT_GET_SIZE_; }
+inline BOOL WriteVALUE2(WORD ver, const EPGDB_EVENT_INFO* val, BYTE* buff, DWORD buffSize, DWORD* writeSize ){ CCUTIL2_INHERIT_WRITE_; }
+inline BOOL ReadVALUE2(WORD ver, EPGDB_EVENT_INFO* val, const BYTE* buff, DWORD buffSize, DWORD* readSize ){ CCUTIL2_INHERIT_READ_; }
+
+inline DWORD GetVALUESize2(WORD ver, const vector<EPGDB_EVENT_INFO*>* val ){ CCUTIL2_VECTOR_GET_SIZE_; }
+inline BOOL WriteVALUE2(WORD ver, const vector<EPGDB_EVENT_INFO*>* val, BYTE* buff, DWORD buffSize, DWORD* writeSize ){ CCUTIL2_VECTOR_WRITE_; }
+inline BOOL ReadVALUE2(WORD ver, vector<EPGDB_EVENT_INFO*>* val, const BYTE* buff, DWORD buffSize, DWORD* readSize ){ CCUTIL2_VECTOR_READ_AND_NEW_; }
+
 inline DWORD GetVALUESize2(WORD ver, const EPGDB_SEARCH_DATE_INFO* val ){ CCUTIL2_INHERIT_GET_SIZE_; }
 inline BOOL WriteVALUE2(WORD ver, const EPGDB_SEARCH_DATE_INFO* val, BYTE* buff, DWORD buffSize, DWORD* writeSize ){ CCUTIL2_INHERIT_WRITE_; }
 inline BOOL ReadVALUE2(WORD ver, EPGDB_SEARCH_DATE_INFO* val, const BYTE* buff, DWORD buffSize, DWORD* readSize ){ CCUTIL2_INHERIT_READ_; }
@@ -129,6 +137,10 @@ inline BOOL ReadVALUE2(WORD ver, vector<EPGDB_SEARCH_DATE_INFO>* val, const BYTE
 DWORD GetVALUESize2(WORD ver, const EPGDB_SEARCH_KEY_INFO* val );
 BOOL WriteVALUE2(WORD ver, const EPGDB_SEARCH_KEY_INFO* val, BYTE* buff, DWORD buffSize, DWORD* writeSize );
 BOOL ReadVALUE2(WORD ver, EPGDB_SEARCH_KEY_INFO* val, const BYTE* buff, DWORD buffSize, DWORD* readSize );
+
+inline DWORD GetVALUESize2(WORD ver, const vector<EPGDB_SEARCH_KEY_INFO>* val ){ CCUTIL2_VECTOR_GET_SIZE_PTR_; }
+inline BOOL WriteVALUE2(WORD ver, const vector<EPGDB_SEARCH_KEY_INFO>* val, BYTE* buff, DWORD buffSize, DWORD* writeSize ){ CCUTIL2_VECTOR_WRITE_PTR_; }
+inline BOOL ReadVALUE2(WORD ver, vector<EPGDB_SEARCH_KEY_INFO>* val, const BYTE* buff, DWORD buffSize, DWORD* readSize ){ CCUTIL2_VECTOR_READ_; }
 
 DWORD GetVALUESize2(WORD ver, const EPG_AUTO_ADD_DATA* val );
 BOOL WriteVALUE2(WORD ver, const EPG_AUTO_ADD_DATA* val, BYTE* buff, DWORD buffSize, DWORD* writeSize );
