@@ -959,7 +959,7 @@ bool CEpgTimerSrvMain::AutoAddReserveEPG(const EPG_AUTO_ADD_DATA& data)
 					item.serviceID = info.service_id;
 					item.eventID = info.event_id;
 					item.recSetting = data.recSetting;
-					if( data.searchInfo.chkRecEnd != 0 && this->reserveManager.IsFindRecEventInfo(info, data.searchInfo.chkRecDay) ){
+					if( data.searchInfo.chkRecEnd != 0 && this->reserveManager.IsFindRecEventInfo(info, data.searchInfo) ){
 						item.recSetting.recMode = RECMODE_NO;
 					}
 					item.comment = L"EPG©“®—\–ñ";
@@ -969,7 +969,7 @@ bool CEpgTimerSrvMain::AutoAddReserveEPG(const EPG_AUTO_ADD_DATA& data)
 						Replace(item.comment, L"\n", L"");
 					}
 				}
-			}else if( data.searchInfo.chkRecEnd != 0 && this->reserveManager.IsFindRecEventInfo(info, data.searchInfo.chkRecDay) ){
+			}else if( data.searchInfo.chkRecEnd != 0 && this->reserveManager.IsFindRecEventInfo(info, data.searchInfo) ){
 				//˜^‰æÏ‚İ‚È‚Ì‚Å–³Œø‚Å‚È‚¢—\–ñ‚Í–³Œø‚É‚·‚é
 				if( this->reserveManager.ChgAutoAddNoRec(info.original_network_id, info.transport_stream_id, info.service_id, info.event_id) ){
 					modified = true;
@@ -1019,11 +1019,12 @@ bool CEpgTimerSrvMain::AutoAddReserveProgram(const MANUAL_AUTO_ADD_DATA& data)
 					item.serviceID = data.serviceID;
 					item.eventID = 0xFFFF;
 					item.recSetting = data.recSetting;
+					item.comment = L"ƒvƒƒOƒ‰ƒ€©“®—\–ñ";
 				}
 			}
 		}
 	}
-	return setList.empty() == false && this->reserveManager.AddReserveData(setList);
+	return setList.empty() == false && this->reserveManager.AddReserveData(setList, true);
 }
 
 static void SearchPgCallback(vector<CEpgDBManager::SEARCH_RESULT_EVENT>* pval, void* param)
@@ -1036,6 +1037,25 @@ static void SearchPgCallback(vector<CEpgDBManager::SEARCH_RESULT_EVENT>* pval, v
 	CMD_STREAM *resParam = (CMD_STREAM*)param;
 	resParam->param = CMD_SUCCESS;
 	resParam->data = NewWriteVALUE(&valp, resParam->dataSize);
+}
+
+//‘å•Ïs‹V‚ªˆ«‚¢‚ªA³‚µ‚­ver“n‚·‚½‚ß‚ÉŠO‚É’u‚¢‚Ä‚¨‚­B
+static WORD CommitedVerForNewCMD=(WORD)CMD_VER;//ˆê‰‰Šú‰»
+static void SearchPg2Callback(vector<CEpgDBManager::SEARCH_RESULT_EVENT>* pval, void* param)
+{
+	vector<EPGDB_EVENT_INFO*> valp;
+	valp.reserve(pval->size());
+	for( size_t i = 0; i < pval->size(); i++ ){
+		valp.push_back((*pval)[i].info);
+	}
+	CMD_STREAM *resParam = (CMD_STREAM*)param;
+	resParam->param = CMD_SUCCESS;
+	resParam->data = NewWriteVALUE2WithVersion(CommitedVerForNewCMD, &valp, resParam->dataSize);
+}
+
+static void SearchPgByKey2Callback(vector<CEpgDBManager::SEARCH_RESULT_EVENT>* pval, void* param)
+{
+	SearchPg2Callback(pval, param);
 }
 
 static void EnumPgInfoCallback(vector<EPGDB_EVENT_INFO*>* pval, void* param)
@@ -1709,6 +1729,38 @@ int CALLBACK CEpgTimerSrvMain::CtrlCmdCallback(void* param, CMD_STREAM* cmdParam
 	case CMD2_EPG_SRV_GET_EPG_FILE2:
 		OutputDebugString(L"CMD2_EPG_SRV_GET_EPG_FILE2\r\n");
 		resParam->param = CMD_NON_SUPPORT;
+		break;
+	case CMD2_EPG_SRV_SEARCH_PG2:
+		OutputDebugString(L"CMD2_EPG_SRV_SEARCH_PG2\r\n");
+		if( sys->epgDB.IsInitialLoadingDataDone() == FALSE ){
+			resParam->param = CMD_ERR_BUSY;
+		}else{
+			//WORD ver;
+			DWORD readSize;
+			if( ReadVALUE(&CommitedVerForNewCMD, cmdParam->data, cmdParam->dataSize, &readSize) ){
+				vector<EPGDB_SEARCH_KEY_INFO> key;
+				if( ReadVALUE2(CommitedVerForNewCMD, &key, cmdParam->data + readSize, cmdParam->dataSize - readSize, NULL) ){
+					sys->epgDB.SearchEpg(&key, SearchPg2Callback, resParam);
+				}
+
+			}
+		}
+		break;
+	case CMD2_EPG_SRV_SEARCH_PG_BYKEY2:
+		OutputDebugString(L"CMD2_EPG_SRV_SEARCH_PG_BYKEY2\r\n");
+		if( sys->epgDB.IsInitialLoadingDataDone() == FALSE ){
+			resParam->param = CMD_ERR_BUSY;
+		}else{
+			//WORD ver;
+			DWORD readSize;
+			if( ReadVALUE(&CommitedVerForNewCMD, cmdParam->data, cmdParam->dataSize, &readSize) ){
+				vector<EPGDB_SEARCH_KEY_INFO> key;
+				if( ReadVALUE2(CommitedVerForNewCMD, &key, cmdParam->data + readSize, cmdParam->dataSize - readSize, NULL) ){
+					sys->epgDB.SearchEpgByKey(&key, SearchPg2Callback, resParam);
+				}
+
+			}
+		}
 		break;
 	case CMD2_EPG_SRV_ENUM_AUTO_ADD2:
 		{

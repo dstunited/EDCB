@@ -792,6 +792,9 @@ void CtrlCmdUtil::CopyData(Def::EpgSearchKeyInfo^ src, EPGDB_SEARCH_KEY_INFO* de
 	dest->freeCAFlag = src->freeCAFlag;
 	dest->chkRecEnd = src->chkRecEnd;
 	dest->chkRecDay = src->chkRecDay;
+	dest->chkRecNoService = src->chkRecNoService;
+	dest->chkDurationMin = src->chkDurationMin;
+	dest->chkDurationMax = src->chkDurationMax;
 }
 
 void CtrlCmdUtil::CopyData(EPGDB_SEARCH_KEY_INFO* src, Def::EpgSearchKeyInfo^% dest)
@@ -831,6 +834,9 @@ void CtrlCmdUtil::CopyData(EPGDB_SEARCH_KEY_INFO* src, Def::EpgSearchKeyInfo^% d
 	dest->freeCAFlag = src->freeCAFlag;
 	dest->chkRecEnd = src->chkRecEnd;
 	dest->chkRecDay = src->chkRecDay;
+	dest->chkRecNoService = src->chkRecNoService;
+	dest->chkDurationMin = src->chkDurationMin;
+	dest->chkDurationMax = src->chkDurationMax;
 }
 
 void CtrlCmdUtil::CopyData(Def::RecFileInfo^ src, REC_FILE_INFO* dest)
@@ -1441,12 +1447,58 @@ UInt32 CtrlCmdUtil::SendSearchPg(
 		keyList.push_back(item);
 	}
 
-	DWORD ret = this->sendCmd->SendSearchPg(&keyList, &list);
+	DWORD ret = this->sendCmd->SendSearchPg2(&keyList, &list);
 	if( ret == CMD_SUCCESS ){
 		for( size_t i=0; i<list.size(); i++ ){
 			Def::EpgEventInfo^ item = gcnew Def::EpgEventInfo();
 			CopyData(list[i], item);
 			val->Add(item);
+			SAFE_DELETE(list[i]);
+		}
+	}
+
+	return ret;
+}
+
+/// <summary>
+/// 指定イベントの番組情報を取得する(キーごと)
+/// </summary>
+/// <param name="key">[IN]検索キー（複数指定時はまとめて検索結果が返る）</param>
+/// <param name="val">[OUT]番組情報一覧（キーごとの全ての検索結果が返る）</param>
+UInt32 CtrlCmdUtil::SendSearchPgByKey(
+	List<Def::EpgSearchKeyInfo^>^ key,
+	List<List<Def::EpgEventInfo^>^>^% val
+	)
+{
+	vector<EPGDB_SEARCH_KEY_INFO> keyList;
+	vector<EPGDB_EVENT_INFO*> list;
+
+	for( int i=0; i<key->Count; i++ ){
+		EPGDB_SEARCH_KEY_INFO item;
+		CopyData(key[i], &item);
+		keyList.push_back(item);
+	}
+
+	//送られてくるデータはダミー区切りのリストなので、ここで分解する。
+
+	DWORD ret = this->sendCmd->SendSearchPgByKey2(&keyList, &list);
+	if( ret == CMD_SUCCESS ){
+        List<Def::EpgEventInfo^>^ itemlist = gcnew List<Def::EpgEventInfo^>();
+
+		for( size_t i=0; i<list.size(); i++ ){
+			Def::EpgEventInfo^ item = gcnew Def::EpgEventInfo();
+
+			if (list[i]->original_network_id == 0 && list[i]->transport_stream_id == 0 &&
+                list[i]->service_id == 0 && list[i]->event_id == 0 && list[i]->shortInfo == NULL)
+			{
+	            val->Add(itemlist);
+				itemlist = gcnew List<Def::EpgEventInfo^>();
+			}else
+			{
+				CopyData(list[i], item);
+                itemlist->Add(item);
+			}
+
 			SAFE_DELETE(list[i]);
 		}
 	}
