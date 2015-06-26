@@ -364,6 +364,11 @@ namespace CtrlCmdCLI {
 			);
 
 		/// <summary>
+		/// 設定ファイル(ini)の更新を通知させる
+		/// </summary>
+		UInt32 SendNotifyProfileUpdate();
+
+		/// <summary>
 		/// ネットワークモードのEpgDataCap_Bonのチャンネルを切り替え
 		/// </summary>
         /// <param name="val">[IN]チャンネル情報</param>

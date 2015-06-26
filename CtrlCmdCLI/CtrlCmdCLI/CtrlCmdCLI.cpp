@@ -1782,6 +1782,15 @@ UInt32 CtrlCmdUtil::SendGetChgChTVTest(
 }
 
 /// <summary>
+/// 設定ファイル(ini)の更新を通知させる
+/// </summary>
+UInt32 CtrlCmdUtil::SendNotifyProfileUpdate(
+	)
+{
+	return this->sendCmd->SendNotifyProfileUpdate();
+}
+
+/// <summary>
 /// ネットワークモードのEpgDataCap_Bonのチャンネルを切り替え
 /// </summary>
 /// <param name="val">[IN]チャンネル情報</param>
