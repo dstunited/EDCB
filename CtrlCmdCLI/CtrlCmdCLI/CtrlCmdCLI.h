@@ -226,6 +226,16 @@ namespace CtrlCmdCLI {
 			);
 
 		/// <summary>
+		/// 指定イベントの番組情報を取得する(キーごと)
+		/// </summary>
+        /// <param name="key">[IN]検索キー（複数指定時はまとめて検索結果が返る）</param>
+        /// <param name="val">[OUT]番組情報一覧（キーごとの全ての検索結果が返る）</param>
+		UInt32 SendSearchPgByKey(
+			List<Def::EpgSearchKeyInfo^>^ key,
+			List<List<Def::EpgEventInfo^>^>^% val
+			);
+
+		/// <summary>
 		/// スタンバイ、休止、シャットダウンを行っていいかの確認
 		/// </summary>
 		UInt32 SendChkSuspend(
@@ -352,6 +362,11 @@ namespace CtrlCmdCLI {
 			UInt64 val,
 			Def::TvTestChChgInfo^% resVal
 			);
+
+		/// <summary>
+		/// 設定ファイル(ini)の更新を通知させる
+		/// </summary>
+		UInt32 SendNotifyProfileUpdate();
 
 		/// <summary>
 		/// ネットワークモードのEpgDataCap_Bonのチャンネルを切り替え

@@ -58,6 +58,8 @@
 #define CMD2_EPG_SRV_ADDCHK_RESERVE2		2030 //サーバー連携用　予約追加できるかのチェック（戻り値 0:追加不可 1:追加可能 2:追加可能だが開始か終了が重なるものあり 3:すでに同じ物がある）
 #define CMD2_EPG_SRV_GET_EPG_FILETIME2		2031 //サーバー連携用　EPGデータファイルのタイムスタンプ取得
 #define CMD2_EPG_SRV_GET_EPG_FILE2			2032 //サーバー連携用　EPGデータファイル取得
+#define CMD2_EPG_SRV_SEARCH_PG2				2125 //番組検索
+#define CMD2_EPG_SRV_SEARCH_PG_BYKEY2		2127 //番組検索、キーごとのイベントを全て返す
 #define CMD2_EPG_SRV_ENUM_AUTO_ADD2			2131 //自動予約登録の条件一覧取得
 #define CMD2_EPG_SRV_ADD_AUTO_ADD2			2132 //自動予約登録の条件追加
 #define CMD2_EPG_SRV_CHG_AUTO_ADD2			2134 //自動予約登録の条件変更
@@ -89,6 +91,7 @@
 #define CMD2_EPG_SRV_FILE_COPY				1060 //指定ファイルを転送する
 #define CMD2_EPG_SRV_ENUM_PLUGIN			1061 //PlugInファイルの一覧を取得する（1:ReName、2:Write）
 #define CMD2_EPG_SRV_GET_CHG_CH_TVTEST		1062 //TVTestのチャンネル切り替え用の情報を取得する
+#define CMD2_EPG_SRV_PROFILE_UPDATE			1063 //設定ファイル(ini)の更新を通知させる
 
 #define CMD2_EPG_SRV_NWTV_SET_CH			1070 //ネットワークモードのEpgDataCap_Bonのチャンネルを切り替え
 #define CMD2_EPG_SRV_NWTV_CLOSE				1071 //ネットワークモードで起動中のEpgDataCap_Bonを終了
